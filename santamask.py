@@ -51,8 +51,9 @@ def face_angle(face: dict):
     """
     nb = face['nose_bridge']   # линия переносицы
     dp = np.array(nb[0]) - np.array(nb[-1])  # вектор вдоль этой линии
-    _, y = dp / np.linalg.norm(dp)  # нормируем его
-    return np.rad2deg(np.arccos(-y))  # арккосинус y – и есть угол!
+
+    x, y = dp / np.linalg.norm(dp)  # нормируем его
+    return np.rad2deg(np.arctan2(x, y) - np.pi)
 
 
 def brow_center(face: dict):
