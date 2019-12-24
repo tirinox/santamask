@@ -4,34 +4,43 @@ import numpy as np
 
 def rotate_image(mat, angle):
     """
-    Rotates an image (angle in degrees) and expands image to avoid cropping
+    Вращает изображение mat на угол angle в градусах
+    При это размер нового изображения подгоняется так, чтобы не было обрезки
     """
 
     height, width = mat.shape[:2]
 
-    # getRotationMatrix2D needs coordinates in reverse order (width, height) compared to shape
+    # центр вращение
     image_center = (width / 2, height / 2)
 
+    # матрица вращения
     rotation_mat = cv2.getRotationMatrix2D(image_center, angle, 1.)
 
-    # rotation calculates the cos and sin, taking absolutes of those.
+    # косиунус угла и синус угла достанем из матрицы
     abs_cos = abs(rotation_mat[0, 0])
     abs_sin = abs(rotation_mat[0, 1])
 
-    # find the new width and height bounds
+    # вращаем самый дальний угол, тчобы наайт новые размеры изображения
     bound_w = int(height * abs_sin + width * abs_cos)
     bound_h = int(height * abs_cos + width * abs_sin)
 
-    # subtract old image center (bringing image back to origo) and adding the new image center coordinates
+    # заменим центр смещения в матрице вращение со старого на новый
     rotation_mat[0, 2] += bound_w / 2 - image_center[0]
     rotation_mat[1, 2] += bound_h / 2 - image_center[1]
 
-    # rotate image with the new bounds and translated rotation matrix
+    # применем преобразование
     rotated_mat = cv2.warpAffine(mat, rotation_mat, (bound_w, bound_h))
     return rotated_mat, rotation_mat
 
 
 def camera_stream(handler, capture_size=(320, 200), capture_id=0):
+    """
+    Запускает стрим с камеры
+    :param handler: обработчик приминает кадр с камеры и возвращает обработнный кадр
+    :param capture_size: желаемый размер кадра
+    :param capture_id: идентификатор камеры, если камера одна - 0
+    :return: None
+    """
     webcam = cv2.VideoCapture(capture_id)
     print(f'Capture {capture_id} started @ {capture_size}!')
 
@@ -48,15 +57,28 @@ def camera_stream(handler, capture_size=(320, 200), capture_id=0):
 
 
 def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA, anchor_px=None):
+    """
+    Эта функция изменяет размер изображения сохраняя соотношение сторон
+    А еще она одновременно трансформирует точку anchor_px = (x, y) с учетом изменения размера
+    :param image: входное изобржение
+    :param width: желаемая ширина или None
+    :param height: желаемая высота или None
+    :param inter: тип интерполяции
+    :param anchor_px: точка для трасформирования или None
+    :return:
+    """
     (h, w) = image.shape[:2]
 
+    # если ни одна не задана, то возвращем исходное изображение
     if width is None and height is None:
         return image
 
     if width is None:
+        # желаем высоту, считаем ширину
         r = height / float(h)
         dim = (int(w * r), height)
     else:
+        # желаем ширину, считаем высоту
         r = width / float(w)
         dim = (width, int(h * r))
 
@@ -69,6 +91,12 @@ def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA, anchor_px
 
 
 def rect_intersection(a, b):
+    """
+    Пересечение прямоугольников
+    :param a: (aX, aY, aWidth, aHeight)
+    :param b: (bX, bY, bWidth, bHeight)
+    :return: (iX, iY, iWidth, iHeight)
+    """
     x = max(a[0], b[0])
     y = max(a[1], b[1])
     w = min(a[0] + a[2], b[0] + b[2]) - x
