@@ -44,46 +44,46 @@ def brow_center(face: dict):
     return int(x), int(y)
 
 
-def apply_new_year(canvas, hat, beard, face):
-    # print(list(face.keys()))
+class SantaMask:
+    def __init__(self, debug=False):
+        self.hat = SpriteAnchored(cv2.imread('data/hat.png', cv2.IMREAD_UNCHANGED), (322, 450))
+        self.beard = SpriteAnchored(cv2.imread('data/beard.png', cv2.IMREAD_UNCHANGED), (606, 85))
+        self.debug = debug
 
-    fw = face_width(face)
-    beard_width = int(fw * 1.1)
-    hat_width = int(fw * 1.7)
+    def _apply_for_face(self, canvas, face):
 
-    beard_pos = nose_tip(face)
-    hat_pos = brow_center(face)
+        fw = face_width(face)
+        beard_width = int(fw * 1.1)
+        hat_width = int(fw * 1.7)
 
-    angle = face_angle(face)
+        beard_pos = nose_tip(face)
+        hat_pos = brow_center(face)
 
-    print(f'Angle: {angle:.2f}º')
+        angle = face_angle(face)
 
-    overlay_scaled_rotated(canvas, hat.sprite, hat_pos, angle=angle, target_width=hat_width, anchor_px=hat.anchor)
+        overlay_scaled_rotated(canvas,
+                               self.hat.sprite,
+                               hat_pos, angle=angle,
+                               target_width=hat_width,
+                               anchor_px=self.hat.anchor)
 
-    overlay_scaled_rotated(canvas, beard.sprite, beard_pos, angle=angle, target_width=beard_width, anchor_px=beard.anchor)
+        overlay_scaled_rotated(canvas,
+                               self.beard.sprite,
+                               beard_pos, angle=angle,
+                               target_width=beard_width,
+                               anchor_px=self.beard.anchor)
 
-    # for feature in face.values():
-    #     cv2.polylines(canvas, np.array([feature]), False, (255, 0, 255, 255), thickness=2)
+        if self.debug:
+            print(f'Angle: {angle:.2f}º')
+            for feature in face.values():
+                cv2.polylines(canvas, np.array([feature]), False, (255, 0, 255, 255), thickness=2)
 
-
-def main():
-    hat = SpriteAnchored(cv2.imread('data/hat.png', cv2.IMREAD_UNCHANGED), (322, 450))
-    beard = SpriteAnchored(cv2.imread('data/beard.png', cv2.IMREAD_UNCHANGED), (606, 85))
-
-    def handler(frame):
+    def apply(self, frame):
         face_landmarks_list = face_recognition.face_landmarks(frame)
-        print(f'{len(face_landmarks_list)} faces found.')
+
+        if self.debug:
+            print(f'{len(face_landmarks_list)} faces found.')
+            
         for face in face_landmarks_list:
-            apply_new_year(frame, hat, beard, face)
+            self._apply_for_face(frame, face)
         return frame
-
-    camera_stream(handler, (640, 480))
-
-    # im = cv2.imread('data/man.jpg')
-    # im = image_resize(im, width=800)
-    # cv2.imshow('1', im)
-    # cv2.waitKey()
-
-
-if __name__ == '__main__':
-    main()
