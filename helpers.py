@@ -33,29 +33,6 @@ def rotate_image(mat, angle):
     return rotated_mat, rotation_mat
 
 
-def camera_stream(handler, capture_size=(320, 200), capture_id=0):
-    """
-    Запускает стрим с камеры
-    :param handler: обработчик приминает кадр с камеры и возвращает обработнный кадр
-    :param capture_size: желаемый размер кадра
-    :param capture_id: идентификатор камеры, если камера одна - 0
-    :return: None
-    """
-    webcam = cv2.VideoCapture(capture_id)
-    print(f'Capture {capture_id} started @ {capture_size}!')
-
-    while True:
-        (_, input_frame) = webcam.read()
-
-        input_frame = cv2.resize(input_frame, capture_size)
-        output_frame = handler(input_frame)
-
-        cv2.imshow('Output', output_frame)
-        key = cv2.waitKey(10)
-        if key == 27:
-            break
-
-
 def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA, anchor_px=None):
     """
     Эта функция изменяет размер изображения сохраняя соотношение сторон

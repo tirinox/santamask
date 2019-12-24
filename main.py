@@ -1,16 +1,19 @@
 from santamask import SantaMask
-from helpers import camera_stream
+from video_streams import camera_stream, video_stream
+import sys
 
 
 def main():
     santa = SantaMask()
+    handler = santa.apply
 
-    camera_stream(santa.apply, (640, 480))
-
-    # im = cv2.imread('data/man.jpg')
-    # im = image_resize(im, width=800)
-    # cv2.imshow('1', im)
-    # cv2.waitKey()
+    if len(sys.argv) == 3:
+        # если заданы аргументы - то читаем и пишем в видео
+        _, input_videofile, output_videofile = sys.argv
+        video_stream(input_videofile, output_videofile, handler)
+    else:
+        # без аргументов - видео будет с камеры
+        camera_stream(handler, (640, 480))
 
 
 if __name__ == '__main__':

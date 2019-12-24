@@ -83,7 +83,7 @@ class SantaMask:
 
         if self.debug:
             print(f'{len(face_landmarks_list)} faces found.')
-            
+
         for face in face_landmarks_list:
             self._apply_for_face(frame, face)
         return frame
