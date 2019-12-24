@@ -84,6 +84,13 @@ def rect_intersection(a, b):
 
 
 def overlay(dest_img, source_img, position):
+    """
+    Рисует одно изображение поверх другого с учетом прозрасти
+    :param dest_img: np.ndarray на чем рисуем
+    :param source_img: np.ndarray что рисуем
+    :param position: (x, y) координаты для рисования верхнего левого угла
+    :return: None
+    """
     x, y = position
     x = int(x)
     y = int(y)
@@ -103,6 +110,16 @@ def overlay(dest_img, source_img, position):
 
 
 def overlay_scaled_rotated(dest, source, position, angle, target_width, anchor_px=(0, 0)):
+    """
+    Рисует одно изображение поверх другого с учетом прозрасти с зумом и поворотом
+    :param dest: np.ndarray на чем рисуем
+    :param source: np.ndarray что рисуем
+    :param position: (x, y) координаты, куда попадет anchor_px от source на dest
+    :param angle: угол поворота в градусах
+    :param target_width: ширина, к которой приводится source перед рисованием
+    :param anchor_px: (x, y) – якорная точка на source
+    :return: None
+    """
     scaled, anchor_px = image_resize(source, width=target_width, anchor_px=anchor_px)
 
     rotated, rot_transform = rotate_image(scaled, angle)
