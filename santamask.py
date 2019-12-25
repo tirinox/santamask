@@ -30,7 +30,7 @@ def center_of_feature(f):
     """
     nt = np.array(f)
     x, y = np.mean(nt, axis=0)
-    return x, y
+    return int(x), int(y)
 
 
 def nose_tip(face: dict):
@@ -39,8 +39,7 @@ def nose_tip(face: dict):
     :param face: лицо
     :return: (x, y)
     """
-    x, y = center_of_feature(face['nose_tip'])
-    return int(x), int(y)
+    return center_of_feature(face['nose_tip'])
 
 
 def face_angle(face: dict):
@@ -76,6 +75,11 @@ def brow_center(face: dict):
     return int(x), int(y)
 
 
+def brow_center2(face: dict):
+    eyes = face['left_eye'], face['right_eye']
+    return center_of_feature([center_of_feature(eye) for eye in eyes])
+
+
 class SantaMask:
     def __init__(self, debug=False):
         # шапка
@@ -93,7 +97,7 @@ class SantaMask:
         beard_pos = nose_tip(face)
 
         # шап крепится ко лбу
-        hat_pos = brow_center(face)
+        hat_pos = brow_center2(face)
 
         # угол наклона лица от вертикали
         angle = face_angle(face)
