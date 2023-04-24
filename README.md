@@ -1,8 +1,6 @@
 # santamask
 Applies Santa's hat and beard to photo/video (Celebrating the New Year 2020!)
 
-![Example](screenshot.png)
-
 ### How to use
 
 First of all, please, install the dependencies:
